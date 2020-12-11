@@ -6,6 +6,7 @@ import {
 import { LocalForm, Control, Errors } from 'react-redux-form';
 import { Link } from 'react-router-dom';
 const required = val => val && val.length;
+
 const maxLength = len => val => !val || (val.length <= len);
 const minLength = len => val => val && (val.length >= len);
 
@@ -23,7 +24,7 @@ const minLength = len => val => val && (val.length >= len);
         );
     }
  
-    function RenderComments({comments}) {
+    function RenderComments({comments, addComment, campsiteId}) {
         if (comments) {
             return (
                 <div className='col-md-5 m-1'>
@@ -36,14 +37,13 @@ const minLength = len => val => val && (val.length >= len);
                             </p>
                         </div>
                     )}
-                    <CommentForm/>
+                    <CommentForm campsiteId={campsiteId} addComment={addComment} />
                 </div>
-            
             );
         }
         return (
             <div></div>
-        )
+        );
     }
 
     class CommentForm extends Component {
@@ -62,13 +62,14 @@ const minLength = len => val => val && (val.length >= len);
             });
         }
         handleSubmit(values) {
-            console.log({ values });
-            alert("Current State is: " + JSON.stringify(values));
+            this.toggleModal();
+            this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text);
         }
     
 
         render () {
-            return (<>
+            return (
+            <div>
                 <Button color="primary" className="fa fa-pencil" outline onClick={this.toggleModal}> Submit Comment</Button>
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
@@ -119,7 +120,7 @@ const minLength = len => val => val && (val.length >= len);
                         </LocalForm>
                     </ModalBody>
                 </Modal>
-            </>
+            </div>
             );
         }
     }
@@ -140,7 +141,11 @@ const minLength = len => val => val && (val.length >= len);
                     </div>
                     <div className="row">
                         <RenderCampsite campsite={props.campsite} />
-                        <RenderComments comments={props.comments} />
+                        <RenderComments 
+                        comments={props.comments}
+                        addComment={props.addComment}
+                        campsiteId={props.campsite.id}
+                    />
                     </div>
                 </div>
             );
